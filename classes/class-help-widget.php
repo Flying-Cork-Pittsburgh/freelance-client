@@ -1,6 +1,6 @@
 <?php
 /**
-* description of package
+* Help Widget to Display Customer Service information on the dashboard
 *
 * @package Freelance_Client
 * @subpackage Widgets
@@ -17,9 +17,18 @@ class Help_Widget extends WP_Widget {
 
 	protected $colors = array();
 
+	/**
+	 * Constructor
+	 *
+	 * Initialize the widget with options
+	 *
+	 * @since 0.1
+	 *
+	 * @return void
+	 */
 	function __construct() {
-		$this->title = __( 'Customer Service', 'frecli' );
-		$this->title_label = __( 'Customer Service by Awesome Studios', 'frecli' );
+		$this->title = __( 'WordPress Customer Service', 'frecli' );
+		$this->title_label = __( 'WordPress Customer Service', 'frecli' );
 		$this->content_label = __( 'Content', 'frecli' );
 
 		$widget_options = array();
@@ -31,13 +40,22 @@ class Help_Widget extends WP_Widget {
 		parent::__construct( NULL, __( $this->title ), $widget_options );
 	}
 
+	/**
+	 * Creates a dashboard widget and pushses it to the top
+	 *
+	 * Long Description
+	 *
+	 * @since version
+	 * @global array $wp_meta_boxes
+	 * @return type it does something
+	 */
 	public function dashboard_setup() {
 		$help_widget = 'frecli-help-dashboard-widget';
 
 		wp_add_dashboard_widget(
 			$help_widget,
 			$this->title_label,
-			array(&$this, 'help_dashboard_content')
+			array( $this, 'help_dashboard_content' )
 		);
 
 	 	// Globalize the metaboxes array, this holds all the widgets for wp-admin
@@ -60,6 +78,17 @@ class Help_Widget extends WP_Widget {
 	}
 
 
+	/**
+	 * display the content of the dashboard widget
+	 *
+	 *
+	 * @since 0.1 
+	 * @uses {get_option()}
+	 *
+	 * @param  option $frecli_help_phone The phone number of the freelancer
+	 * @param  option $frecli_help_email The email of the of freelancer
+	 * @return void
+	 */
 	public function help_dashboard_content() {
 		$phone = get_option('frecli_help_phone', '206-555-1212');
 		$email = get_option('frecli_help_email', 'help@example.org');
