@@ -4,6 +4,7 @@
 
 
 # ignore packaged files
+*.bak
 *.gz
 *.iso
 *.jar
