@@ -112,9 +112,6 @@ function frecli_autoloader( $class_name ) {
     if ( file_exists( $file_path ) ) {
         include_once $file_path;
 
-        if ( WP_DEBUG ) {
-            error_log( 'frecli_autoloader loaded filename=' . $file_path );
-        }
     }
 }
 
