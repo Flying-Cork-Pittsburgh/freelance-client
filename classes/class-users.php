@@ -10,9 +10,15 @@ class Users
 
 	public function run() {
 		add_filter( 'views_users', array( $this, 'modify_views_remove_administrator' ) );
-		add_action( 'manage_users_posts_custom_column', array( $this, 'column_content' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'remove_admin_js' ) );
 	}
 
+
+	public function remove_admin_js( $hook ) {
+		if ( ! current_user_can( 'update_core' ) ) {
+			wp_enqueue_script( 'fre-cli', plugin_dir_url( __DIR__ ) . 'js/remove_administrator.js' );
+		}
+	}
 
 
 	/**
