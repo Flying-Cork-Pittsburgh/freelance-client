@@ -20,10 +20,7 @@ Author URI: http://andrewwoods.net
 */
 class Freelance_Client {
 
-	private static $instance = null;
-
-	private static $role_id = 'site_admin';
-	private static $role_name = 'Site Administrator';
+	private $user = '';
 
 	/**
 	 * Constructor
@@ -32,30 +29,17 @@ class Freelance_Client {
 	 * @todo  write these descriptions
 	 *
 	 */
-	public function __construct() {
-		register_activation_hook( __FILE__, array( 'Freelance_Manager', 'activation' ) );
-		register_uninstall_hook( __FILE__, array( 'Freelance_Manager', 'uninstall' ) ); 
+	public function __construct() { }
 
-		add_filter( 'views_users', array( $this, 'modify_views_users_remove_administrator_conditionally' ) );
+	public function run() {
+		register_activation_hook( __FILE__, array( $this, 'activation' ) );
+		register_deactivation_hook( __FILE__, array( $this, 'uninstall' ) );
+
+		add_action( 'init', array( $this, 'admin_init') );
 	}
 
-	/**
-	 * Short Description
-	 *
-	 * Long Description
-	 *
-	 * @since 0.1
-	 * @todo  write these descriptions
-	 * @param  array $views it does something
-	 * @return array 
-	 */
-	function modify_views_users_remove_administrator_conditionally( $views )
-	{
-		// Manipulate $views
-		if ( ! current_user_can( 'update_core' ) ){
-			unset( $views['administrator'] );
-		}
-		return $views;
+	public function set_user( $user ) {
+		$this->user = $user;
 	}
 
 	/**
@@ -68,8 +52,8 @@ class Freelance_Client {
 	 * @param  void
 	 * @return void
 	 */
-	public static function activation(){
-		self::add_new_role();
+	public function activation(){
+		$this->user->add_new_role();
 	}
 
 	/**
@@ -82,8 +66,8 @@ class Freelance_Client {
 	 * @param  void
 	 * @return void
 	 */
-	public static function uninstall() {
-		self::delete_roles();
+	public function uninstall() {
+		$this->user->delete_roles();
 	}
 
 	/**
@@ -96,68 +80,13 @@ class Freelance_Client {
 	* @return void
 	*/
 	public function no_update_nag() {
-		remove_action( 'admin_notices', 'update_nag', 3 );
+		remove_action( 'admin_notices', array( $this, 'update_nag'), 3 );
 	}
 
 	public function admin_init() {
 		if ( ! current_user_can( 'update_core' ) ) {
 			$this->no_update_nag();
 		}
-	}
-
-
-	public function add_new_role() {
-		// Check if the role doesn't exist
-		if ( NULL === get_role( self::$role_id ) ) {
-			// add the role 
-			$admin_role = get_role( 'editor' ); 
-			$capabilities = $admin_role->capabilities;
-
-			$capabilities['activate_plugins'] = 0;
-			$capabilities['create_users'] = 1;
-			$capabilities['delete_plugins'] = 0;
-			$capabilities['delete_themes'] = 0;
-			$capabilities['delete_users'] = 1;
-			$capabilities['edit_files'] = 1;
-			$capabilities['edit_plugins'] = 0;
-			$capabilities['edit_theme_options'] = 1;
-			$capabilities['edit_themes'] = 0;
-			$capabilities['edit_users'] = 1;
-			$capabilities['export'] = 1;
-			$capabilities['import'] = 0;
-
-			$capabilities['install_plugins'] = 0;
-			$capabilities['install_themes'] = 0;
-			$capabilities['list_users'] = 1;
-			$capabilities['manage_options'] = 1;
-			$capabilities['promote_users'] = 1;
-			$capabilities['remove_users'] = 1;
-			$capabilities['switch_themes'] = 0;
-			$capabilities['update_core'] = 0;
-			$capabilities['update_plugins'] = 0;
-			$capabilities['update_themes'] = 0;
-			$capabilities['edit_dashboard'] = 1;
-
-			add_role( self::$role_id, self::$role_name, $capabilities );
-		}
-
-	}
-
-	public function delete_roles() {
-		remove_role( self::$role_id );	
-	}
-
-	/**
-	 * Creates or returns an instance of this class.
-	 *
-	 * @return Freelancer A single instance of this class.
-	 */
-	public static function get_instance() {
-		if ( null == self::$instance ) {
-			self::$instance = new self;
-		}
-
-		return self::$instance;
 	}
 
 }
@@ -194,5 +123,12 @@ spl_autoload_register( 'frecli_autoloader' );
 
 
 $freelance_client = new Freelance_Client();
+
+$user = new Users();
+$user->run();
+
+$freelance_client->set_user( $user );
+$freelance_client->run();
+
 $help_widget = new Help_Widget();
 
