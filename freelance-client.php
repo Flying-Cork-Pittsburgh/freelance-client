@@ -3,7 +3,7 @@
 Plugin Name: Freelance Client
 Description: Used for your client websites. 
 Plugin URI: https://github.com/andrewwoods/freelance-client
-Version: 0.1
+Version: 0.2
 Author: awoods
 Author URI: http://andrewwoods.net
 */
