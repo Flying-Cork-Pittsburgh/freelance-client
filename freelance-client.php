@@ -129,3 +129,6 @@ $freelance_client->run();
 
 $help_widget = new Help_Widget();
 
+$messages = new Messages();
+$messages->run();
+
