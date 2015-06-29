@@ -19,20 +19,34 @@ class Messages
 	 */
 	public function run() {
 		add_action( 'wp_dashboard_setup', array( $this, 'dashboard_setup') );
-		add_action( 'init', array( $this, 'create_message_url' ) );
+		add_action( 'wp_ajax_nopriv_new_message', array( $this, 'new_message' ) );
 	}
 
-	public function create_message_url() {
-		add_rewrite_rule(
-			'^message/([^/]*)$',
-			'index.php?message=$matches[1]',
-			'top'
-		);
+	public function new_message() {
 
-		add_rewrite_tag('%message%','([^/]*)');
+		if ( isset( $_POST["action"] ) ) {
 
-		flush_rewrite_rules();
+			$data = array();
+			$data['action']        = wp_kses_data( $_POST['action'] );
+			$data['message']       = wp_kses_data( $_POST['message'] );
+			$data['client_sha']    = wp_kses_data( $_POST['client_sha'] );
+			$data['freelance_sha'] = wp_kses_data( $_POST['freelance_sha'] );
+
+			if ( FRECLI_CLIENT_ID === $data['client_sha'] ){
+				// define( 'FRECLI_DEV_ID', 'fre_cli_client' );
+				status_header( 200 );
+				wp_send_json_success( $data );
+			} else {
+				$error = array();
+				$error['message'] = 'ID Mismatch';
+				status_header( 401 );
+				wp_send_json_error( $data );
+			}
+
+			die();
+		}
 	}
+
 
 
 	/**
