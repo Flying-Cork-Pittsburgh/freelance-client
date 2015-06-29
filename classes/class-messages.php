@@ -22,25 +22,49 @@ class Messages
 		add_action( 'wp_ajax_nopriv_new_message', array( $this, 'new_message' ) );
 	}
 
+	/**
+	 * Create a new message in the inbox
+	 *
+	 * Accepts a message if the client ID matches, and adds it to the "inbox", which is displayed
+	 * in the dashboard.
+	 *
+	 * @param string $_POST['action'] The action to be taken by the client
+	 * @param int $_POST['id'] The id of the message from the manager site, needed for future operations
+	 * @param string $_POST['message'] The content of the message
+	 * @param string $_POST['client_sha'] The SHA1 representing this client
+	 * @param string $_POST['manager_sha'] The SHA1 representing the manager of this site
+	 * @return json
+	 */
 	public function new_message() {
 
 		if ( isset( $_POST["action"] ) ) {
 
 			$data = array();
 			$data['action']        = wp_kses_data( $_POST['action'] );
+			$data['id']            = intval( $_POST['id'] );
 			$data['message']       = wp_kses_data( $_POST['message'] );
 			$data['client_sha']    = wp_kses_data( $_POST['client_sha'] );
-			$data['freelance_sha'] = wp_kses_data( $_POST['freelance_sha'] );
+			$data['manager_sha']   = wp_kses_data( $_POST['manager_sha'] );
 
 			if ( FRECLI_CLIENT_ID === $data['client_sha'] ){
-				// define( 'FRECLI_DEV_ID', 'fre_cli_client' );
+				$inbox = get_option( 'frecli_inbox', array() );
+
+				$message = array();
+				$message['content'] = $data['message'];
+				$message['status']  = 'unread';
+
+				$inbox[ $data['id'] ] = $message;
+
+				update_option( 'frecli_inbox', $inbox );
+
 				status_header( 200 );
 				wp_send_json_success( $data );
 			} else {
 				$error = array();
 				$error['message'] = 'ID Mismatch';
+
 				status_header( 401 );
-				wp_send_json_error( $data );
+				wp_send_json_error( $error );
 			}
 
 			die();
@@ -106,12 +130,15 @@ class Messages
 		</tr>
 		</thead>
 		<tbody>
+		<?php
+		$inbox = get_option( 'frecli_inbox', array() );
+		foreach ( $inbox AS $id => $message ):
+		?>
 		<tr>
-			<?php $message = 'Your Account is overdue. Please make a payment by <b>2015 Sep 10</b>, 
-			or your website will be disabled'; ?>
-			<td><?php _e( '*', 'frecli' ); ?></td>
-			<td><?php echo $message; ?></td>
+			<td><?php echo $message['status']; ?></td>
+			<td><?php echo $message['content']; ?></td>
 		</tr>
+		<?php endforeach; ?>
 		</tbody>
 		</table>
 		<?php
