@@ -12,12 +12,24 @@ information the users of the site.
 ## Current Features
 
 * An editable dashboard widget for your contact info
-* A new role - Site Administrator - with some of the more dangerous aspects
-  disabled
+* A new role - Site Administrator - that disables some of the more dangerous
+  administrator capabilities
 * The wordpress update nag is disabled for all non-Administrators, so clients
   don't worry about it.
+* you can receive messages from a frelance- manager.
 
-I'd love to hear your thoughts/needs are.
+
+I'd love to hear what your thoughts/needs are.
+
+## Configuration
+
+To prevent unauthorized sending of messages appearing in your dashboard,
+you'll need to add the next two lines to your wp-config.php file.
+
+```
+define( 'FRECLI_CLIENT_ID', 'client sha goes here' );
+define( 'FRECLI_MANAGER_ID', 'manager sha goes here' );
+```
 
 ## In Progress
 
