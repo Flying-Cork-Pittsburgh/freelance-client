@@ -46,14 +46,14 @@ class Messages
 			$data['client_sha']    = wp_kses_data( $_POST['client_sha'] );
 			$data['manager_sha']   = wp_kses_data( $_POST['manager_sha'] );
 
-			if ( FRECLI_CLIENT_ID === $data['client_sha'] ){
+			if ( FRECLI_CLIENT_ID === $data['client_sha'] &&  FRECLI_MANAGER_ID === $data['manager_sha']  ){
 				$inbox = get_option( 'frecli_inbox', array() );
 
-				$message = array();
-				$message['content'] = $data['message'];
-				$message['status']  = 'unread';
 
-				$inbox[ $data['id'] ] = $message;
+				$data['message']['status']  = 'not_read';
+
+				$inbox[ $data['id'] ] = $data['message'];
+
 
 				update_option( 'frecli_inbox', $inbox );
 
@@ -121,22 +121,22 @@ class Messages
 	 * @return void
 	 */
 	public function display_widget() {
+		$inbox = get_option( 'frecli_inbox', array() );
 		?>
 		<table class="widefat">
 		<thead>
 		<tr>
-			<th><?php _e( 'Status', 'frecli' ); ?></th>
-			<th><?php _e( 'Message', 'frecli' ); ?></th>
+			<th><?php _e( 'Date', 'frecli' ); ?></th>
+			<th><?php _e( 'Subject', 'frecli' ); ?></th>
 		</tr>
 		</thead>
 		<tbody>
 		<?php
-		$inbox = get_option( 'frecli_inbox', array() );
 		foreach ( $inbox AS $id => $message ):
 		?>
 		<tr>
-			<td><?php echo $message['status']; ?></td>
-			<td><?php echo $message['content']; ?></td>
+			<td><?php echo $message['date'] ?></td>
+			<td><?php echo $message['subject']; ?></td>
 		</tr>
 		<?php endforeach; ?>
 		</tbody>
