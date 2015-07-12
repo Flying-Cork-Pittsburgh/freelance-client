@@ -55,6 +55,7 @@ class Messages
 				$inbox = get_option( 'frecli_inbox', array() );
 
 				$data['message']['status']  = Status::NOT_READ;
+				$data['message']['time']    = strtotime( $data['message']['date'] );
 
 				$inbox[ $data['id'] ] = $data['message'];
 
@@ -125,18 +126,14 @@ class Messages
 	 */
 	public function display_widget() {
 		$inbox = get_option( 'frecli_inbox', array() );
-
 		?>
-			<th><?php _e( 'Date', 'frecli' ); ?></th>
-			<th><?php _e( 'Subject', 'frecli' ); ?></th>
-			<?php
-			?>
 		<ul>
 		<?php
 		foreach ( $inbox AS $id => $message ):
 			$display_date = $this->display_date( $message['date'] );
+
 		?>
-		<li>
+		<li data-id="<?php echo $message['id']; ?>" class="<?php echo $message['status']; ?>">
 			<time datetime="<?php echo $message['date'] ?>"><?php echo $display_date; ?></time>
 			<span class="subject"><?php echo $message['subject']; ?></span>
 		</li>
