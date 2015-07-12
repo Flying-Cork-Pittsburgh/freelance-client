@@ -103,16 +103,15 @@ class Freelance_Client {
  * @return void
  */
 function frecli_autoloader( $class_name ) {
-    $slug = sanitize_title_with_dashes( $class_name, '', 'save' );
-    $slug = str_replace('_', '-', $slug);
+	$slug = sanitize_title_with_dashes( $class_name, '', 'save' );
+	$slug = str_replace('_', '-', $slug);
 
-    $file = 'class-' . $slug . '.php';
-    $file_path = plugin_dir_path( __FILE__ ) . 'classes/' . $file;
+	$file = 'class-' . $slug . '.php';
+	$file_path = plugin_dir_path( __FILE__ ) . 'classes/' . $file;
 
-    if ( file_exists( $file_path ) ) {
-        include_once $file_path;
-
-    }
+	if ( file_exists( $file_path ) ) {
+		require_once $file_path;
+	}
 }
 
 spl_autoload_register( 'frecli_autoloader' );
