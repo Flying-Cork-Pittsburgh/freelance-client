@@ -122,28 +122,48 @@ class Messages
 	 */
 	public function display_widget() {
 		$inbox = get_option( 'frecli_inbox', array() );
+
 		?>
-		<table class="widefat">
-		<thead>
-		<tr>
 			<th><?php _e( 'Date', 'frecli' ); ?></th>
 			<th><?php _e( 'Subject', 'frecli' ); ?></th>
-		</tr>
-		</thead>
-		<tbody>
+			<?php
+			?>
+		<ul>
 		<?php
 		foreach ( $inbox AS $id => $message ):
+			$display_date = $this->display_date( $message['date'] );
 		?>
-		<tr>
-			<td><?php echo $message['date'] ?></td>
-			<td><?php echo $message['subject']; ?></td>
-		</tr>
+		<li>
+			<time datetime="<?php echo $message['date'] ?>"><?php echo $display_date; ?></time>
+			<span class="subject"><?php echo $message['subject']; ?></span>
+		</li>
 		<?php endforeach; ?>
-		</tbody>
-		</table>
+		</ul>
 		<?php
 	}
 
+
+	/**
+	 * Reformat a UTC timestamp to a shorter human date
+	 *
+	 * @param string $formatted_date a UTC formatted date
+	 * @return string
+	 */
+	public function display_date( $formatted_date ) {
+		$message_time = strtotime( $formatted_date );
+		$time = time();
+
+		$timestamp = false;
+		if ( WEEK_IN_SECONDS > ( $time - $message_time )  ) {
+			// do stuff
+			$timestamp = date("D G:i", $message_time );
+
+		} else {
+			//something else
+			$timestamp = date("M j G:i", $message_time );
+		}
+		return $timestamp;
+	}
 }
 
 
