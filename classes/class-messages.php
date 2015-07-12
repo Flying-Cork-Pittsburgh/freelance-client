@@ -8,8 +8,13 @@ class Messages
 {
 	private $widget_id;
 
+	protected $statuses = '';
+	protected $status = '';
+
 	public function __construct() {
 		$this->widget_id = 'frecli_messages_widget';
+		$this->statuses = new Status();
+		$this->status = Status::NOT_READ;
 	}
 
 	/**
@@ -49,11 +54,9 @@ class Messages
 			if ( FRECLI_CLIENT_ID === $data['client_sha'] &&  FRECLI_MANAGER_ID === $data['manager_sha']  ){
 				$inbox = get_option( 'frecli_inbox', array() );
 
-
-				$data['message']['status']  = 'not_read';
+				$data['message']['status']  = Status::NOT_READ;
 
 				$inbox[ $data['id'] ] = $data['message'];
-
 
 				update_option( 'frecli_inbox', $inbox );
 
